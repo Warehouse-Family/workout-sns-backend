@@ -1,0 +1,71 @@
+package com.warehouse.workout.user.service;
+
+import com.warehouse.workout.user.entity.Role;
+import com.warehouse.workout.user.entity.User;
+import com.warehouse.workout.user.repository.RoleRepository;
+import com.warehouse.workout.user.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+@Transactional
+@Slf4j
+public class UserService implements UserDetailsService {
+
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+
+    public User saveUser(User user){
+
+        return userRepository.save(user);
+    }
+
+    public Role saveRole(Role role){
+        return roleRepository.save(role);
+    }
+
+    public void addRoleToUser(String username, String roleName){
+        User user = userRepository.findByusername(username);
+        Role role = roleRepository.findByName(roleName);
+        user.getRoles().add(role);
+    }
+
+    public User getUser(String username){
+        return userRepository.findByusername(username);
+    }
+
+    public Role getRole(String roleName){
+        return roleRepository.findByName(roleName);
+    }
+
+    public List<User> getUsers(){
+        return userRepository.findAll();
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
+        User user = userRepository.findByusername(username);
+        if(user == null){
+            log.error("User Not Found");
+            throw new UsernameNotFoundException("User Not Found");
+        } else{
+            log.info("User found in the database : {}",user.getUsername());
+        }
+
+        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        user.getRoles().forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getName())) );
+        return new org.springframework.security.core.userdetails.User(user.getUsername(),user.getPassword(),authorities);
+    }
+}
