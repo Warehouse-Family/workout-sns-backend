@@ -73,10 +73,10 @@ public class UserController {
                 String refreshToken = authorizationHeader.substring("Bearer ".length());
                 Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
                 JWTVerifier verifier = JWT.require(algorithm).build();
-                DecodedJWT decodedJWT = verifier.verify(refreshToken);
+                DecodedJWT decodedJWT = verifier.verify(refreshToken); // 리프레시 토큰
                 String username = decodedJWT.getSubject();
                 User user = userService.getUser(username);
-                String accessToken = JWT.create()
+                String accessToken = JWT.create() // 액세스 토큰 생성
                         .withSubject(user.getUsername())
                         .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 60 * 1000))
                         .withIssuer(request.getRequestURL().toString())
