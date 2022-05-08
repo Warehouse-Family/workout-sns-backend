@@ -39,28 +39,28 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         String password = request.getParameter("password");
         log.info("username is :{}",username);
         log.info("password is :{}",password);
-        // 토큰을 활용한 방식의 인증을 수행한다.
+        //
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
         return authenticationManager.authenticate(authenticationToken);
 
     }
 
-    @Override
+    @Override // 인증에 성공한 경우 응답할때 JWT를 담아서 반환한다
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
         User user = (User) authentication.getPrincipal(); // 접속한 사용자의 정보(User Entity아님!!)
         Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
 
+        // 액세스 토큰을 만든다.
         String accessToken = JWT.create()
                 .withSubject(user.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 60 * 1000)) // 현재 시간으로 부터 10분뒤 만료
+                .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 60 * 1000)) // 현재 시간으로부터 10분 뒤 만료
                 .withIssuer(request.getRequestURL().toString()) // 토큰을 발행한 party가 누군지 설정한다.
                 .withClaim("roles",user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
                 .sign(algorithm);
 
-
         String refreshToken = JWT.create()
                 .withSubject(user.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() + 30 * 60 * 1000))
+                .withExpiresAt(new Date(System.currentTimeMillis() + 30 * 60 * 1000)) // 현재 시간으로부터 30분 뒤 만료
                 .withIssuer(request.getRequestURL().toString())
                 .sign(algorithm);
 

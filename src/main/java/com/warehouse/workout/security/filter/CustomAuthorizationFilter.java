@@ -31,24 +31,29 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        // 로그인 또는 토큰 Refresh 요청인 경우 Filter를 통과시킨다
         if(request.getServletPath().equals("/api/login") || request.getServletPath().equals("/api/token/refresh")){
             filterChain.doFilter(request,response);
         } else{
+            // Request 헤더의 Authorization의 값을 가져온다
             String authorizationHeader = request.getHeader(AUTHORIZATION);
+            // authorization이 존재하며, authorization 헤더의 값이 "Bearer"로 시작하면 디코딩 작업 수행
             if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")){
 
                 try {
-                    String token = authorizationHeader.substring("Bearer ".length());
-                    Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
-                    JWTVerifier verifier = JWT.require(algorithm).build();
-                    DecodedJWT decodedJWT = verifier.verify(token);
-                    String username = decodedJWT.getSubject();
-                    String[] roles = decodedJWT.getClaim("roles").asArray(String.class);
+                    String token = authorizationHeader.substring("Bearer ".length());// prefix를 잘라낸다.
+                    Algorithm algorithm = Algorithm.HMAC256("secret".getBytes()); // 암호화 알고리즘을 만든다.
+                    JWTVerifier verifier = JWT.require(algorithm).build();//JWT 검증 인스턴스를 만든다.
+                    DecodedJWT decodedJWT = verifier.verify(token); //Token을 디코딩한다.
+                    String username = decodedJWT.getSubject(); // Token에서 username을 가져온다
+                    String[] roles = decodedJWT.getClaim("roles").asArray(String.class); //Token에서 역할을 가져온다.
                     Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-                    stream(roles).forEach(role -> {
+                    stream(roles).forEach(role -> { // 역할을 SimpleGrantedAuthority형태로 변환한다.
                         authorities.add(new SimpleGrantedAuthority(role));
                     });
+                    // username과 password를 사용한 인증방식에서 사용할 UsernamePasswordAuthenticationToken 클래스
                     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, null, authorities);
+                    // SecurityContextHolder에 사용자 인증정보를 담아 다음 filter로 넘긴다
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                     filterChain.doFilter(request,response);
 

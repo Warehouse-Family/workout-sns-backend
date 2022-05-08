@@ -13,14 +13,20 @@ import java.util.Collection;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String name;
     private String username;
     private String password;
+    private String PhoneNumber;
+    private String email;
+
     @OneToMany(fetch = FetchType.EAGER)
     private Collection<Role> roles = new ArrayList<>();
+
+
 
 
 }

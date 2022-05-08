@@ -40,7 +40,7 @@ public class UserService implements UserDetailsService {
 
     public void addRoleToUser(String username, String roleName){
         User user = userRepository.findByusername(username);
-        Role role = roleRepository.findByName(roleName);
+        Role role = roleRepository.findByRoleName(roleName);
         user.getRoles().add(role);
     }
 
@@ -49,7 +49,7 @@ public class UserService implements UserDetailsService {
     }
 
     public Role getRole(String roleName){
-        return roleRepository.findByName(roleName);
+        return roleRepository.findByRoleName(roleName);
     }
 
     public List<User> getUsers(){
@@ -68,7 +68,7 @@ public class UserService implements UserDetailsService {
         }
 
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        user.getRoles().forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getName())) );
+        user.getRoles().forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getRoleName().toString())));
         return new org.springframework.security.core.userdetails.User(user.getUsername(),user.getPassword(),authorities);
     }
 }

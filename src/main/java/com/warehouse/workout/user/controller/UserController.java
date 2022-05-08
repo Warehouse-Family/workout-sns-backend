@@ -80,7 +80,7 @@ public class UserController {
                         .withSubject(user.getUsername())
                         .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 60 * 1000))
                         .withIssuer(request.getRequestURL().toString())
-                        .withClaim("roles",user.getRoles().stream().map(Role::getName).collect(Collectors.toList()))
+                        .withClaim("roles",user.getRoles().stream().map(Role::getRoleName).collect(Collectors.toList()))
                         .sign(algorithm);
                 // 응답 바디에 토큰 세팅
                 Map<String,String> tokens = new HashMap<>();
@@ -102,13 +102,7 @@ public class UserController {
         } else{
             throw new RuntimeException("Refresh token is missing");
         }
-
-
-
     }
-
-
-
 }
 
 @Data

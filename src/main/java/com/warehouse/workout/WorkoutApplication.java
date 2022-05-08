@@ -2,6 +2,7 @@ package com.warehouse.workout;
 
 import com.warehouse.workout.user.entity.Role;
 import com.warehouse.workout.user.entity.User;
+import com.warehouse.workout.user.entity.UserRole;
 import com.warehouse.workout.user.service.UserService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -27,19 +28,16 @@ public class WorkoutApplication {
 	@Bean
 	CommandLineRunner run(UserService userService){
 		return args -> {
-			userService.saveRole(new Role(null, "ROLE_USER"));
-			userService.saveRole(new Role(null, "ROLE_MANAGER"));
-			userService.saveRole(new Role(null, "ROLE_ADMIN"));
-			userService.saveRole(new Role(null, "ROLE_SUPER_ADMIN"));
+			userService.saveRole(new Role(null, UserRole.USER,UserRole.USER.getDescription()));
+			userService.saveRole(new Role(null, UserRole.ADMIN,UserRole.ADMIN.getDescription()));
 
-			userService.saveUser(new User(null,"soojong", "hsz3855","123", new ArrayList<>()));
-			userService.saveUser(new User(null,"hyojong", "hhz3855","123", new ArrayList<>()));
-			userService.saveUser(new User(null,"sunny", "sunny","123", new ArrayList<>()));
+			userService.saveUser(new User(null,"soojong", "hsz3855","123",
+					"010-0000-0000" ,"hsz3855@naver.com",new ArrayList<>()));
+			userService.saveUser(new User(null,"sunny", "sunny","123",
+					"010-0000-0000" ,"hsz3855@naver.com",new ArrayList<>()));
 
-			userService.addRoleToUser("hsz3855" , "ROLE_USER");
-			userService.addRoleToUser("hsz3855" , "ROLE_MANAGER");
-			userService.addRoleToUser("hhz3855" , "ROLE_ADMIN");
-			userService.addRoleToUser("sunny" , "ROLE_SUPER_ADMIN");
+			userService.addRoleToUser("hsz3855" , "USER");
+			userService.addRoleToUser("sunny" , "ROLE_ADMIN");
 
 
 		};
