@@ -2,6 +2,7 @@ package com.warehouse.workout.user.service;
 
 import com.warehouse.workout.user.entity.Role;
 import com.warehouse.workout.user.entity.User;
+import com.warehouse.workout.user.entity.UserRole;
 import com.warehouse.workout.user.repository.RoleRepository;
 import com.warehouse.workout.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -38,9 +39,9 @@ public class UserService implements UserDetailsService {
         return roleRepository.save(role);
     }
 
-    public void addRoleToUser(String username, String roleName){
+    public void addRoleToUser(String username, UserRole userRole){
         User user = userRepository.findByusername(username);
-        Role role = roleRepository.findByRoleName(roleName);
+        Role role = roleRepository.findByRoleName(userRole);
         user.getRoles().add(role);
     }
 
@@ -49,7 +50,7 @@ public class UserService implements UserDetailsService {
     }
 
     public Role getRole(String roleName){
-        return roleRepository.findByRoleName(roleName);
+        return roleRepository.findByRoleName(UserRole.valueOf(roleName));
     }
 
     public List<User> getUsers(){

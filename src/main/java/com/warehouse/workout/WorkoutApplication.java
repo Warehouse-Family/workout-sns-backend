@@ -36,8 +36,8 @@ public class WorkoutApplication {
 			userService.saveUser(new User(null,"sunny", "sunny","123",
 					"010-0000-0000" ,"hsz3855@naver.com",new ArrayList<>()));
 
-			userService.addRoleToUser("hsz3855" , "USER");
-			userService.addRoleToUser("sunny" , "ROLE_ADMIN");
+			userService.addRoleToUser("hsz3855" , UserRole.USER);
+			userService.addRoleToUser("sunny" , UserRole.ADMIN);
 
 
 		};

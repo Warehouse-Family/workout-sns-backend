@@ -7,6 +7,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.warehouse.workout.user.entity.Role;
 import com.warehouse.workout.user.entity.User;
+import com.warehouse.workout.user.entity.UserRole;
 import com.warehouse.workout.user.service.UserService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -58,7 +59,7 @@ public class UserController {
 
     @PostMapping("/role/addtouser")
     public ResponseEntity<?> addRoleToUser(@RequestBody RoleToUserForm roleToUserForm){
-        userService.addRoleToUser(roleToUserForm.getUsername(),roleToUserForm.getRoleName());
+        userService.addRoleToUser(roleToUserForm.getUsername(), UserRole.valueOf(roleToUserForm.getRoleName()));
         return ResponseEntity.ok().build();
     }
 

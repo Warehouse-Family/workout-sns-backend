@@ -20,7 +20,7 @@ public class User {
     private String name;
     private String username;
     private String password;
-    private String PhoneNumber;
+    private String phoneNumber;
     private String email;
 
     @OneToMany(fetch = FetchType.EAGER)
