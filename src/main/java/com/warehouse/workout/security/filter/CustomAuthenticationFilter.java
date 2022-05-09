@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.warehouse.workout.user.entity.RefreshToken;
 import com.warehouse.workout.user.repository.RefreshTokenRepository;
 import com.warehouse.workout.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,9 +34,14 @@ import java.util.stream.Collectors;
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
+    private final UserRepository userRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
-    public CustomAuthenticationFilter(AuthenticationManager authenticationManager) {
-        this.authenticationManager = authenticationManager;
+    public CustomAuthenticationFilter(AuthenticationManager authenticationManager, UserRepository userRepository, RefreshTokenRepository refreshTokenRepository) {
+        this.authenticationManager=authenticationManager;
+        this.userRepository = userRepository;
+        this.refreshTokenRepository = refreshTokenRepository;
+
     }
 
     @Override // 인증작업을 수행하는 메소드
@@ -70,9 +77,11 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
                 .sign(algorithm);
 
         // 새롭게 발급한 내용을 DB에 저장한다.
-        log.info("로그인 성공 {}",((User) authentication.getPrincipal()).getUsername());
+        String username = ((User) authentication.getPrincipal()).getUsername();
+        log.info("로그인 성공 {}",username);
+        com.warehouse.workout.user.entity.User userEntity = userRepository.findByusername(username);
 
-
+        refreshTokenRepository.save(new RefreshToken(null,userEntity,LocalDateTime.now(),LocalDateTime.now().plusDays(14),refreshToken));
 
 
         // 응답 바디에 토큰 세팅

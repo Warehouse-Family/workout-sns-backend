@@ -2,6 +2,9 @@ package com.warehouse.workout.security;
 
 import com.warehouse.workout.security.filter.CustomAuthenticationFilter;
 import com.warehouse.workout.security.filter.CustomAuthorizationFilter;
+import com.warehouse.workout.user.repository.RefreshTokenRepository;
+import com.warehouse.workout.user.repository.RoleRepository;
+import com.warehouse.workout.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -27,9 +30,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
+
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        // AuthenticationManager가 사용함
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
     }
 
@@ -37,7 +44,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 
         // /api/login 요청을 처리하기 위한 필터를 생성한다
-        CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean());
+        CustomAuthenticationFilter customAuthenticationFilter =
+                new CustomAuthenticationFilter(authenticationManagerBean(),userRepository,refreshTokenRepository);
         customAuthenticationFilter.setFilterProcessesUrl("/api/login"); // 로그인 요청 API
 
         http.csrf().disable();
