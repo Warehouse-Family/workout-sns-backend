@@ -5,6 +5,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.warehouse.workout.user.dto.RoleToUserDto;
 import com.warehouse.workout.user.entity.Role;
 import com.warehouse.workout.user.entity.User;
 import com.warehouse.workout.user.entity.UserRole;
@@ -17,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -42,12 +44,19 @@ public class UserController {
 
     @GetMapping("/users")
     public ResponseEntity<List<User>> getUsers(){
-           return ResponseEntity.ok().body(userService.getUsers());
+
+        SecurityContext context = SecurityContextHolder.getContext();
+        log.info("getCredentials = {}",context.getAuthentication().getCredentials());
+        log.info("getPrincipal = {}",context.getAuthentication().getPrincipal());
+
+        return ResponseEntity.ok().body(userService.getUsers());
     }
 
     @PostMapping("/user/save")
     public ResponseEntity<User> saveUser(@RequestBody User user){
         URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/user/save").toUriString());
+
+
         return ResponseEntity.created(uri).body(userService.saveUser(user));
     }
 
@@ -58,8 +67,8 @@ public class UserController {
     }
 
     @PostMapping("/role/addtouser")
-    public ResponseEntity<?> addRoleToUser(@RequestBody RoleToUserForm roleToUserForm){
-        userService.addRoleToUser(roleToUserForm.getUsername(), UserRole.valueOf(roleToUserForm.getRoleName()));
+    public ResponseEntity<?> addRoleToUser(@RequestBody RoleToUserDto roleToUserDto){
+        userService.addRoleToUser(roleToUserDto.getUsername(), UserRole.valueOf(roleToUserDto.getRoleName()));
         return ResponseEntity.ok().build();
     }
 
@@ -106,8 +115,4 @@ public class UserController {
     }
 }
 
-@Data
-class RoleToUserForm{
-    private String username;
-    private String roleName;
-}
+

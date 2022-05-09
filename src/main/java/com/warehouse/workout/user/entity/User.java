@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Data
@@ -16,17 +17,23 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "user_id")
     private Long id;
+    @Column(name = "name")
     private String name;
+    @Column(name = "username")
     private String username;
+    @Column(name = "password")
     private String password;
-    private String phoneNumber;
+    @Column(name = "phone_number")
+    private String PhoneNumber;
+    @Column(name = "email")
     private String email;
 
     @OneToMany(fetch = FetchType.EAGER)
     private Collection<Role> roles = new ArrayList<>();
 
-
-
+//    @OneToOne(mappedBy = "user")
+//    private RefreshToken refreshTokens;
 
 }

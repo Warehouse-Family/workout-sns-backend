@@ -4,7 +4,11 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.warehouse.workout.user.repository.RefreshTokenRepository;
+import com.warehouse.workout.user.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -39,8 +43,9 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         String password = request.getParameter("password");
         log.info("username is :{}",username);
         log.info("password is :{}",password);
-        //
+
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
+        // 내부적으로 ProviderManager -> AbstractUserDetailsAuthenticationProvider.java -> DaoAuthenticationProvider의 retrieveUser 메소드
         return authenticationManager.authenticate(authenticationToken);
 
     }
@@ -63,6 +68,12 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
                 .withExpiresAt(new Date(System.currentTimeMillis() + 30 * 60 * 1000)) // 현재 시간으로부터 30분 뒤 만료
                 .withIssuer(request.getRequestURL().toString())
                 .sign(algorithm);
+
+        // 새롭게 발급한 내용을 DB에 저장한다.
+        log.info("로그인 성공 {}",((User) authentication.getPrincipal()).getUsername());
+
+
+
 
         // 응답 바디에 토큰 세팅
         Map<String,String> tokens = new HashMap<>();

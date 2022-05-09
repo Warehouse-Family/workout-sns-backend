@@ -34,7 +34,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
         // 로그인 또는 토큰 Refresh 요청인 경우 Filter를 통과시킨다
         if(request.getServletPath().equals("/api/login") || request.getServletPath().equals("/api/token/refresh")){
             filterChain.doFilter(request,response);
-        } else{
+        } else{ // 검증
             // Request 헤더의 Authorization의 값을 가져온다
             String authorizationHeader = request.getHeader(AUTHORIZATION);
             // authorization이 존재하며, authorization 헤더의 값이 "Bearer"로 시작하면 디코딩 작업 수행
