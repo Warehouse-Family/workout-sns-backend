@@ -30,8 +30,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
-    private final UserRepository userRepository;
-    private final RefreshTokenRepository refreshTokenRepository;
 
 
     @Override
@@ -45,7 +43,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         // /api/login 요청을 처리하기 위한 필터를 생성한다
         CustomAuthenticationFilter customAuthenticationFilter =
-                new CustomAuthenticationFilter(authenticationManagerBean(),userRepository,refreshTokenRepository);
+                new CustomAuthenticationFilter(authenticationManagerBean());
         customAuthenticationFilter.setFilterProcessesUrl("/api/login"); // 로그인 요청 API
 
         http.csrf().disable();

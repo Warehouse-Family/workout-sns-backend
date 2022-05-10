@@ -18,9 +18,11 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -31,17 +33,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
+@Transactional
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
-    private final UserRepository userRepository;
-    private final RefreshTokenRepository refreshTokenRepository;
 
-    public CustomAuthenticationFilter(AuthenticationManager authenticationManager, UserRepository userRepository, RefreshTokenRepository refreshTokenRepository) {
+    public CustomAuthenticationFilter(AuthenticationManager authenticationManager) {
         this.authenticationManager=authenticationManager;
-        this.userRepository = userRepository;
-        this.refreshTokenRepository = refreshTokenRepository;
-
     }
 
     @Override // 인증작업을 수행하는 메소드
@@ -52,7 +50,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         log.info("password is :{}",password);
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
-        // 내부적으로 ProviderManager -> AbstractUserDetailsAuthenticationProvider.java -> DaoAuthenticationProvider의 retrieveUser 메소드
+        // 내부적으로 authenticationManager -> ProviderManager -> AbstractUserDetailsAuthenticationProvider.java -> DaoAuthenticationProvider의 retrieveUser 메소드
         return authenticationManager.authenticate(authenticationToken);
 
     }
@@ -76,18 +74,16 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
                 .withIssuer(request.getRequestURL().toString())
                 .sign(algorithm);
 
-        // 새롭게 발급한 내용을 DB에 저장한다.
-        String username = ((User) authentication.getPrincipal()).getUsername();
-        log.info("로그인 성공 {}",username);
-        com.warehouse.workout.user.entity.User userEntity = userRepository.findByusername(username);
-
-        refreshTokenRepository.save(new RefreshToken(null,userEntity,LocalDateTime.now(),LocalDateTime.now().plusDays(14),refreshToken));
-
+        // http Only Cookie에 Refresh Token을 담아서 보낸다.
+        Cookie cookie = new Cookie("refresh_token",refreshToken);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        response.addCookie(cookie);
 
         // 응답 바디에 토큰 세팅
         Map<String,String> tokens = new HashMap<>();
         tokens.put("access_token", accessToken);
-        tokens.put("refresh_token", refreshToken);
+        //tokens.put("refresh_token", refreshToken);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         new ObjectMapper().writeValue(response.getOutputStream(),tokens);
 
