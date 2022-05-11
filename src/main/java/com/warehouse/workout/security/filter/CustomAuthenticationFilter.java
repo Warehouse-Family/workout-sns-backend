@@ -4,11 +4,13 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.warehouse.workout.user.entity.RefreshToken;
 import com.warehouse.workout.user.repository.RefreshTokenRepository;
 import com.warehouse.workout.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,13 +21,16 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StreamUtils;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.ServletInputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
@@ -44,8 +49,20 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
     @Override // 인증작업을 수행하는 메소드
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
+        String username = "";
+        String password = "";
+
+        try {
+            ServletInputStream inputStream = request.getInputStream();
+            String msgBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
+            JSONObject root = new JSONObject(msgBody);
+
+            username = root.get("username").toString();
+            password = root.get("password").toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         log.info("username is :{}",username);
         log.info("password is :{}",password);
 
@@ -83,7 +100,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         // 응답 바디에 토큰 세팅
         Map<String,String> tokens = new HashMap<>();
         tokens.put("access_token", accessToken);
-        //tokens.put("refresh_token", refreshToken);
+        tokens.put("refresh_token", refreshToken);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         new ObjectMapper().writeValue(response.getOutputStream(),tokens);
 
