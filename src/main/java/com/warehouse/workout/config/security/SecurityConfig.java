@@ -1,10 +1,7 @@
-package com.warehouse.workout.security;
+package com.warehouse.workout.config.security;
 
-import com.warehouse.workout.security.filter.CustomAuthenticationFilter;
-import com.warehouse.workout.security.filter.CustomAuthorizationFilter;
-import com.warehouse.workout.user.repository.RefreshTokenRepository;
-import com.warehouse.workout.user.repository.RoleRepository;
-import com.warehouse.workout.user.repository.UserRepository;
+import com.warehouse.workout.config.security.filter.CustomAuthorizationFilter;
+import com.warehouse.workout.config.security.filter.CustomAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -15,13 +12,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.header.writers.frameoptions.WhiteListedAllowFromStrategy;
 import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
-
-import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity

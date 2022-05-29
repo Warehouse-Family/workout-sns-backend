@@ -1,4 +1,4 @@
-package com.warehouse.workout.security.filter;
+package com.warehouse.workout.config.security.filter;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
