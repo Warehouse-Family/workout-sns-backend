@@ -1,8 +1,8 @@
 package com.warehouse.workout.user.repository;
 
-import com.warehouse.workout.user.entity.User;
+import com.warehouse.workout.user.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRepository extends JpaRepository<User,Long> {
-    User findByusername(String username);
+public interface UserRepository extends JpaRepository<UserEntity,Long> {
+    UserEntity findByusername(String username);
 }

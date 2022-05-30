@@ -1,7 +1,7 @@
 package com.warehouse.workout;
 
 import com.warehouse.workout.user.entity.Role;
-import com.warehouse.workout.user.entity.User;
+import com.warehouse.workout.user.entity.UserEntity;
 import com.warehouse.workout.user.entity.UserRole;
 import com.warehouse.workout.user.service.UserService;
 import org.springframework.boot.CommandLineRunner;
@@ -31,9 +31,9 @@ public class WorkoutApplication {
 			userService.saveRole(new Role(null, UserRole.USER,UserRole.USER.getDescription()));
 			userService.saveRole(new Role(null, UserRole.ADMIN,UserRole.ADMIN.getDescription()));
 
-			userService.saveUser(new User(null,"soojong", "hsz3855","123",
+			userService.saveUser(new UserEntity(null,"soojong", "hsz3855","123",
 					"010-0000-0000" ,"hsz3855@naver.com",new ArrayList<>()));
-			userService.saveUser(new User(null,"sunny", "sunny","123",
+			userService.saveUser(new UserEntity(null,"sunny", "sunny","123",
 					"010-0000-0000" ,"hsz3855@naver.com",new ArrayList<>()));
 
 			userService.addRoleToUser("hsz3855" , UserRole.USER);

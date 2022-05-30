@@ -6,8 +6,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
 
 @Entity
 @Table(name = "REFRESH_TOKEN")
@@ -23,7 +21,7 @@ public class RefreshToken {
 
     @OneToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private UserEntity user;
 
     @Column(name = "issue_time")
     private LocalDateTime issueTime;

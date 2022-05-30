@@ -7,17 +7,13 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.warehouse.workout.user.dto.RoleToUserDto;
 import com.warehouse.workout.user.entity.Role;
-import com.warehouse.workout.user.entity.User;
+import com.warehouse.workout.user.entity.UserEntity;
 import com.warehouse.workout.user.entity.UserRole;
 import com.warehouse.workout.user.service.UserService;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -43,7 +39,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/users")
-    public ResponseEntity<List<User>> getUsers(){
+    public ResponseEntity<List<UserEntity>> getUsers(){
 
         SecurityContext context = SecurityContextHolder.getContext();
         log.info("getCredentials = {}",context.getAuthentication().getCredentials());
@@ -53,7 +49,7 @@ public class UserController {
     }
 
     @PostMapping("/user/save")
-    public ResponseEntity<User> saveUser(@RequestBody User user){
+    public ResponseEntity<UserEntity> saveUser(@RequestBody UserEntity user){
         URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/user/save").toUriString());
 
 
@@ -85,7 +81,7 @@ public class UserController {
                 JWTVerifier verifier = JWT.require(algorithm).build();
                 DecodedJWT decodedJWT = verifier.verify(refreshToken); // 리프레시 토큰
                 String username = decodedJWT.getSubject();
-                User user = userService.getUser(username);
+                UserEntity user = userService.getUser(username);
                 String accessToken = JWT.create() // 액세스 토큰 생성
                         .withSubject(user.getUsername())
                         .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 60 * 1000))

@@ -1,7 +1,7 @@
 package com.warehouse.workout.user.service;
 
 import com.warehouse.workout.user.entity.Role;
-import com.warehouse.workout.user.entity.User;
+import com.warehouse.workout.user.entity.UserEntity;
 import com.warehouse.workout.user.entity.UserRole;
 import com.warehouse.workout.user.repository.RoleRepository;
 import com.warehouse.workout.user.repository.UserRepository;
@@ -30,7 +30,7 @@ public class UserService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
 
 
-    public User saveUser(User user){
+    public UserEntity saveUser(UserEntity user){
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
@@ -40,12 +40,12 @@ public class UserService implements UserDetailsService {
     }
 
     public void addRoleToUser(String username, UserRole userRole){
-        User user = userRepository.findByusername(username);
+        UserEntity user = userRepository.findByusername(username);
         Role role = roleRepository.findByRoleName(userRole);
         user.getRoles().add(role);
     }
 
-    public User getUser(String username){
+    public UserEntity getUser(String username){
         return userRepository.findByusername(username);
     }
 
@@ -53,14 +53,14 @@ public class UserService implements UserDetailsService {
         return roleRepository.findByRoleName(UserRole.valueOf(roleName));
     }
 
-    public List<User> getUsers(){
+    public List<UserEntity> getUsers(){
         return userRepository.findAll();
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        User user = userRepository.findByusername(username);
+        UserEntity user = userRepository.findByusername(username);
         if(user == null){
             log.error("User Not Found");
             throw new UsernameNotFoundException("User Not Found");
