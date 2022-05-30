@@ -1,5 +1,7 @@
 package com.warehouse.workout.feed.entity;
 
+import lombok.Builder;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -21,5 +23,10 @@ public class PostEntity {
     @Column(name = "WRITTEN_AT")
     private LocalDateTime writtenAt;
 
-
+    @Builder
+    public PostEntity(Long id, String content, LocalDateTime writtenAt) {
+        this.id = id;
+        this.content = content;
+        this.writtenAt = writtenAt;
+    }
 }
