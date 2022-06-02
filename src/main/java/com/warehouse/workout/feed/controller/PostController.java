@@ -23,8 +23,17 @@ public class PostController {
     // 게시글 쓰기
     @PostMapping(value = "/api/v1/post")
     public void createPost(PostCreationRequestDto post ) throws IOException {
-
         postService.createPost(post);
+    }
+
+    @GetMapping(value = "/api/v1/post")
+    public void findPost(@RequestParam(value = "post-id") Long postId){
+        postService.findPost(postId);
+    }
+
+    @GetMapping(value = "/api/v1/posts")
+    public void selectPosts(){
+
     }
 
 
