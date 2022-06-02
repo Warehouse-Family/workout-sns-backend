@@ -1,8 +1,13 @@
 package com.warehouse.workout.feed.entity;
 
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 
 @Entity
+@NoArgsConstructor
+@Table(name = "TABLE_POST_PICTURE")
 public class PostPictureEntity {
 
     @Id
@@ -15,4 +20,9 @@ public class PostPictureEntity {
 
     private String picturePath;
 
+    @Builder
+    public PostPictureEntity(PostEntity post, String picturePath) {
+        this.post = post;
+        this.picturePath = picturePath;
+    }
 }
