@@ -16,17 +16,17 @@ public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "user_id")
+    @Column(name = "USER_ID")
     private Long id;
-    @Column(name = "name")
+    @Column(name = "NAME")
     private String name;
-    @Column(name = "username")
+    @Column(name = "USERNAME")
     private String username;
-    @Column(name = "password")
+    @Column(name = "PASSWORD")
     private String password;
-    @Column(name = "phone_number")
+    @Column(name = "PHONE_NUMBER")
     private String PhoneNumber;
-    @Column(name = "email")
+    @Column(name = "EMAIL")
     private String email;
 
     @OneToMany(fetch = FetchType.EAGER)

@@ -31,10 +31,8 @@ public class PostController {
         postService.findPost(postId);
     }
 
-    @GetMapping(value = "/api/v1/posts")
-    public void selectPosts(){
+    @GetMapping(value = "/api/v1/post-comments/")
+    public void findPostComments(){
 
     }
-
-
 }
