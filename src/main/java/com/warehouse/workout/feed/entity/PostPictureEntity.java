@@ -1,12 +1,14 @@
 package com.warehouse.workout.feed.entity;
 
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Entity
 @NoArgsConstructor
+@Getter
 @Table(name = "TABLE_POST_PICTURE")
 public class PostPictureEntity {
 
