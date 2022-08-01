@@ -25,23 +25,23 @@ public class WorkoutApplication {
 		return new BCryptPasswordEncoder();
 	}
 
-	@Bean
-	CommandLineRunner run(UserService userService){
-		return args -> {
-			userService.saveRole(new Role(null, UserRole.USER,UserRole.USER.getDescription()));
-			userService.saveRole(new Role(null, UserRole.ADMIN,UserRole.ADMIN.getDescription()));
-
-			userService.saveUser(new UserEntity(null,"soojong", "hsz3855","123",
-					"010-0000-0000" ,"hsz3855@naver.com",new ArrayList<>()));
-			userService.saveUser(new UserEntity(null,"sunny", "sunny","123",
-					"010-0000-0000" ,"hsz3855@naver.com",new ArrayList<>()));
-
-			userService.addRoleToUser("hsz3855" , UserRole.USER);
-			userService.addRoleToUser("sunny" , UserRole.ADMIN);
-
-
-		};
-	}
+//	@Bean
+//	CommandLineRunner run(UserService userService){
+//		return args -> {
+//			userService.saveRole(new Role(null, UserRole.USER,UserRole.USER.getDescription()));
+//			userService.saveRole(new Role(null, UserRole.ADMIN,UserRole.ADMIN.getDescription()));
+//
+//			userService.saveUser(new UserEntity(null,"soojong", "hsz3855","123",
+//					"010-0000-0000" ,"hsz3855@naver.com",new ArrayList<>()));
+//			userService.saveUser(new UserEntity(null,"sunny", "sunny","123",
+//					"010-0000-0000" ,"hsz3855@naver.com",new ArrayList<>()));
+//
+//			userService.addRoleToUser("hsz3855" , UserRole.USER);
+//			userService.addRoleToUser("sunny" , UserRole.ADMIN);
+//
+//
+//		};
+//	}
 
 
 }
