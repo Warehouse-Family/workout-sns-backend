@@ -27,8 +27,7 @@ dependencies {
 	implementation 'org.json:json:20220320'
 
 
-	//implementation 'org.mariadb.jdbc:mariadb-java-client'
-	implementation 'com.h2database:h2'
+	implementation 'org.mariadb.jdbc:mariadb-java-client'
 	implementation 'com.auth0:java-jwt:3.18.1'
 
 	compileOnly 'org.projectlombok:lombok'
