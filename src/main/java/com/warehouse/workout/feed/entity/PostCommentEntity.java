@@ -4,7 +4,7 @@ import com.warehouse.workout.user.entity.UserEntity;
 
 import javax.persistence.*;
 
-@Entity
+@Entity(name = "TABLE_POST_COMMENT")
 public class PostCommentEntity {
 
     @Id

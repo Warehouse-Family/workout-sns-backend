@@ -8,7 +8,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "REFRESH_TOKEN")
+@Table(name = "TABLE_REFRESH_TOKEN")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
