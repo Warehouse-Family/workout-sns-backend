@@ -30,7 +30,7 @@ public class UserEntity {
     private String email;
 
     @OneToMany(fetch = FetchType.EAGER)
-    private Collection<Role> roles = new ArrayList<>();
+    private Collection<RoleEntity> roles = new ArrayList<>();
 
 //    @OneToOne(mappedBy = "user")
 //    private RefreshToken refreshTokens;

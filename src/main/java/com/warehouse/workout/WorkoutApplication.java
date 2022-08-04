@@ -1,6 +1,5 @@
 package com.warehouse.workout;
 
-import com.warehouse.workout.user.entity.Role;
 import com.warehouse.workout.user.entity.UserEntity;
 import com.warehouse.workout.user.entity.UserRole;
 import com.warehouse.workout.user.service.UserService;

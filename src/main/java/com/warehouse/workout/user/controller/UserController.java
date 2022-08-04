@@ -6,7 +6,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.warehouse.workout.user.dto.RoleToUserDto;
-import com.warehouse.workout.user.entity.Role;
+import com.warehouse.workout.user.entity.RoleEntity;
 import com.warehouse.workout.user.entity.UserEntity;
 import com.warehouse.workout.user.entity.UserRole;
 import com.warehouse.workout.user.service.UserService;
@@ -57,7 +57,7 @@ public class UserController {
     }
 
     @PostMapping("/role/save")
-    public ResponseEntity<Role> saveRole(@RequestBody Role role){
+    public ResponseEntity<RoleEntity> saveRole(@RequestBody RoleEntity role){
         URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/role/save").toUriString());
         return ResponseEntity.created(uri).body(userService.saveRole(role));
     }
@@ -86,7 +86,7 @@ public class UserController {
                         .withSubject(user.getUsername())
                         .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 60 * 1000))
                         .withIssuer(request.getRequestURL().toString())
-                        .withClaim("roles",user.getRoles().stream().map(Role::getRoleName).collect(Collectors.toList()))
+                        .withClaim("roles",user.getRoles().stream().map(RoleEntity::getRoleName).collect(Collectors.toList()))
                         .sign(algorithm);
                 // 응답 바디에 토큰 세팅
                 Map<String,String> tokens = new HashMap<>();
