@@ -9,6 +9,7 @@ import com.warehouse.workout.user.dto.RoleToUserDto;
 import com.warehouse.workout.user.entity.RoleEntity;
 import com.warehouse.workout.user.entity.UserEntity;
 import com.warehouse.workout.user.entity.UserRole;
+import com.warehouse.workout.user.entity.UserRoleEntity;
 import com.warehouse.workout.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -86,7 +87,7 @@ public class UserController {
                         .withSubject(user.getUsername())
                         .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 60 * 1000))
                         .withIssuer(request.getRequestURL().toString())
-                        .withClaim("roles",user.getRoles().stream().map(RoleEntity::getRoleName).collect(Collectors.toList()))
+                        .withClaim("roles",user.getRoles().stream().map(UserRoleEntity::getRoleName).collect(Collectors.toList()))
                         .sign(algorithm);
                 // 응답 바디에 토큰 세팅
                 Map<String,String> tokens = new HashMap<>();

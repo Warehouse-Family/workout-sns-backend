@@ -14,7 +14,8 @@ public class RoleEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    @Column(name = "ROLE_ID")
+    private Long roleId;
 
     @Enumerated(EnumType.STRING)
     private UserRole roleName;
