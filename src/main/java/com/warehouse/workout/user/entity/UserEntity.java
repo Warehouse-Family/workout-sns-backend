@@ -7,11 +7,10 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 @Entity(name = "TABLE_USER")
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class UserEntity {
 
     @Id
@@ -30,7 +29,7 @@ public class UserEntity {
     private String email;
 
     @OneToMany(mappedBy = "user")
-    private Collection<UserRoleEntity> roles = new ArrayList<>();
+    private List<UserRoleEntity> roles = new ArrayList<>();
 
 //    @OneToOne(mappedBy = "user")
 //    private RefreshToken refreshTokens;
