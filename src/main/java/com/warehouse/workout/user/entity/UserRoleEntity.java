@@ -8,17 +8,18 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 @Entity(name = "TABLE_USER_ROLE")
-@Getter
+@Data
 public class UserRoleEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "USER_ROLE_ID")
     private Long userRoleId;
 
     @ManyToOne
     @JoinColumn(name = "USER_ID")
     private UserEntity user;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "ROLE_ID")
     private RoleEntity role;
 
