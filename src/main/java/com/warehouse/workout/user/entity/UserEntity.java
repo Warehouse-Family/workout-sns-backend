@@ -29,8 +29,8 @@ public class UserEntity {
     @Column(name = "EMAIL")
     private String email;
 
-    @OneToMany(fetch = FetchType.EAGER)
-    private Collection<RoleEntity> roles = new ArrayList<>();
+    @OneToMany(mappedBy = "user")
+    private Collection<UserRoleEntity> roles = new ArrayList<>();
 
 //    @OneToOne(mappedBy = "user")
 //    private RefreshToken refreshTokens;

@@ -3,6 +3,7 @@ package com.warehouse.workout.user.service;
 import com.warehouse.workout.user.entity.RoleEntity;
 import com.warehouse.workout.user.entity.UserEntity;
 import com.warehouse.workout.user.entity.UserRole;
+import com.warehouse.workout.user.entity.UserRoleEntity;
 import com.warehouse.workout.user.repository.RoleRepository;
 import com.warehouse.workout.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +43,9 @@ public class UserService implements UserDetailsService {
     public void addRoleToUser(String username, UserRole userRole){
         UserEntity user = userRepository.findByusername(username);
         RoleEntity role = roleRepository.findByRoleName(userRole);
-        user.getRoles().add(role);
+        //user.getRoles().add(role);
+        // TODO - UserRoleEntity에 맞게 변경
+        
     }
 
     public UserEntity getUser(String username){
