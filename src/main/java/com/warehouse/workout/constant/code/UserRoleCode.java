@@ -1,13 +1,13 @@
-package com.warehouse.workout.user.entity;
+package com.warehouse.workout.constant.code;
 
-public enum UserRole {
+public enum UserRoleCode {
 
     USER("회원"),
     ADMIN("관리자");
 
     private final String description;
 
-    UserRole(String description) {
+    UserRoleCode(String description) {
         this.description = description;
     }
 

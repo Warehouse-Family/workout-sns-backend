@@ -5,10 +5,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.warehouse.workout.user.dto.RoleToUserDto;
-import com.warehouse.workout.user.entity.RoleEntity;
 import com.warehouse.workout.user.entity.UserEntity;
-import com.warehouse.workout.user.entity.UserRole;
 import com.warehouse.workout.user.entity.UserRoleEntity;
 import com.warehouse.workout.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +29,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor
 @Slf4j
 public class UserController {
@@ -49,25 +46,24 @@ public class UserController {
         return ResponseEntity.ok().body(userService.getUsers());
     }
 
-    @PostMapping("/user/save")
+    @PostMapping("/user")
     public ResponseEntity<UserEntity> saveUser(@RequestBody UserEntity user){
-        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/user/save").toUriString());
-
+        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/v1/user").toUriString());
 
         return ResponseEntity.created(uri).body(userService.saveUser(user));
     }
 
-    @PostMapping("/role/save")
-    public ResponseEntity<RoleEntity> saveRole(@RequestBody RoleEntity role){
-        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/role/save").toUriString());
-        return ResponseEntity.created(uri).body(userService.saveRole(role));
-    }
+//    @PostMapping("/role")
+//    public ResponseEntity<RoleEntity> saveRole(@RequestBody RoleEntity role){
+//        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/v1/role").toUriString());
+//        return ResponseEntity.created(uri).body(userService.saveRole(role));
+//    }
 
-    @PostMapping("/role/addtouser")
-    public ResponseEntity<?> addRoleToUser(@RequestBody RoleToUserDto roleToUserDto){
-        userService.addRoleToUser(roleToUserDto.getUsername(), UserRole.valueOf(roleToUserDto.getRoleName()));
-        return ResponseEntity.ok().build();
-    }
+//    @PostMapping("/role/user")
+//    public ResponseEntity<?> addRoleToUser(@RequestBody RoleToUserDto roleToUserDto){
+//        userService.addRoleToUser(roleToUserDto.getUsername(), UserRole.valueOf(roleToUserDto.getRoleName()));
+//        return ResponseEntity.ok().build();
+//    }
 
     @GetMapping("/token/refresh")
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -87,7 +83,7 @@ public class UserController {
                         .withSubject(user.getUsername())
                         .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 60 * 1000))
                         .withIssuer(request.getRequestURL().toString())
-                        .withClaim("roles",user.getRoles().stream().map(UserRoleEntity::getRoleName).collect(Collectors.toList()))
+                        .withClaim("roles",user.getRoles().stream().map(UserRoleEntity::getUserRoleCode).collect(Collectors.toList()))
                         .sign(algorithm);
                 // 응답 바디에 토큰 세팅
                 Map<String,String> tokens = new HashMap<>();
