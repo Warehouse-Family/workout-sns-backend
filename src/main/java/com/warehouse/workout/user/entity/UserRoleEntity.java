@@ -1,14 +1,15 @@
 package com.warehouse.workout.user.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import com.warehouse.workout.constant.code.UserRoleCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
 
 import javax.persistence.*;
 
 @Entity(name = "TABLE_USER_ROLE")
-@Data
+@NoArgsConstructor
+@Getter
 public class UserRoleEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
@@ -19,12 +20,14 @@ public class UserRoleEntity {
     @JoinColumn(name = "USER_ID")
     private UserEntity user;
 
-    @ManyToOne
-    @JoinColumn(name = "ROLE_ID")
-    private RoleEntity role;
+    @Column(name = "ROLE_CODE")
+    private UserRoleCode userRoleCode;
 
-    @Enumerated(EnumType.STRING)
-    private UserRole roleName;
-    private String description;
+    public UserRoleEntity(UserEntity user,UserRoleCode userRoleCode) {
+        this.user = user;
+        this.userRoleCode = userRoleCode;
+    }
+
+
 
 }

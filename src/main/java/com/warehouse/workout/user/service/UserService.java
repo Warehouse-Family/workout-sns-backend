@@ -1,11 +1,10 @@
 package com.warehouse.workout.user.service;
 
-import com.warehouse.workout.user.entity.RoleEntity;
 import com.warehouse.workout.user.entity.UserEntity;
-import com.warehouse.workout.user.entity.UserRole;
+import com.warehouse.workout.constant.code.UserRoleCode;
 import com.warehouse.workout.user.entity.UserRoleEntity;
-import com.warehouse.workout.user.repository.RoleRepository;
 import com.warehouse.workout.user.repository.UserRepository;
+import com.warehouse.workout.user.repository.UserRoleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -27,34 +26,37 @@ import java.util.List;
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
+    private final UserRoleRepository userRoleRepository;
     private final PasswordEncoder passwordEncoder;
 
 
     public UserEntity saveUser(UserEntity user){
+
+        userRoleRepository.save(new UserRoleEntity(user, UserRoleCode.USER));
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
-    public RoleEntity saveRole(RoleEntity role){
-        return roleRepository.save(role);
-    }
+//    public RoleEntity saveRole(RoleEntity role){
+//        return roleRepository.save(role);
+//    }
 
-    public void addRoleToUser(String username, UserRole userRole){
-        UserEntity user = userRepository.findByusername(username);
-        RoleEntity role = roleRepository.findByRoleName(userRole);
-        //user.getRoles().add(role);
-        // TODO - UserRoleEntity에 맞게 변경
-        
-    }
+//    public void addRoleToUser(String username, UserRole userRole){
+//        UserEntity user = userRepository.findByusername(username);
+//        RoleEntity role = roleRepository.findByRoleName(userRole);
+//        //user.getRoles().add(role);
+//        // TODO - UserRoleEntity에 맞게 변경
+//
+//    }
 
     public UserEntity getUser(String username){
         return userRepository.findByusername(username);
     }
 
-    public RoleEntity getRole(String roleName){
-        return roleRepository.findByRoleName(UserRole.valueOf(roleName));
-    }
+//    public RoleEntity getRole(String roleName){
+//        return roleRepository.findByRoleName(UserRole.valueOf(roleName));
+//    }
 
     public List<UserEntity> getUsers(){
         return userRepository.findAll();
@@ -72,7 +74,7 @@ public class UserService implements UserDetailsService {
         }
 
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        user.getRoles().forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getRoleName().toString())));
+        user.getRoles().forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getUserRoleCode().toString())));
         return new org.springframework.security.core.userdetails.User(user.getUsername(),user.getPassword(),authorities);
     }
 }

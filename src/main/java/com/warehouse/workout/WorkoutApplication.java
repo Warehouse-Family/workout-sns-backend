@@ -1,9 +1,6 @@
 package com.warehouse.workout;
 
-import com.warehouse.workout.user.entity.UserEntity;
-import com.warehouse.workout.user.entity.UserRole;
-import com.warehouse.workout.user.service.UserService;
-import org.springframework.boot.CommandLineRunner;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
