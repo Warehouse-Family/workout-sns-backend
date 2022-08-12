@@ -24,7 +24,7 @@ public class UserEntity {
     @Column(name = "PASSWORD")
     private String password;
     @Column(name = "PHONE_NUMBER")
-    private String PhoneNumber;
+    private String phoneNumber;
     @Column(name = "EMAIL")
     private String email;
 
