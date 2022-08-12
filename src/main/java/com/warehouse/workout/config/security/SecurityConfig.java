@@ -37,7 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // /api/login 요청을 처리하기 위한 필터를 생성한다
         CustomAuthenticationFilter customAuthenticationFilter =
                 new CustomAuthenticationFilter(authenticationManagerBean());
-        customAuthenticationFilter.setFilterProcessesUrl("/api/login"); // 로그인 요청 API
+        customAuthenticationFilter.setFilterProcessesUrl("/api/v1/login"); // 로그인 요청 API
 
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
@@ -46,7 +46,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN
         ));
 
-        http.authorizeRequests().antMatchers("/api/login/**","/api/token/refresh").permitAll();
+        http.authorizeRequests().antMatchers("/api/v1/login/**","/api/v1/token/refresh").permitAll();
         http.authorizeRequests().antMatchers("/api/v1/**").permitAll();
         http.authorizeRequests().antMatchers(HttpMethod.GET,"api/v1/user/**").hasAnyAuthority("ROLE_USER");
         http.authorizeRequests().antMatchers(HttpMethod.POST,"api/v1/user/**").hasAnyAuthority("ROLE_ADMIN");
