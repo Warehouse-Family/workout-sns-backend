@@ -23,7 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 @Slf4j
-public class UserService implements UserDetailsService {
+public class UserService {
 
     private final UserRepository userRepository;
     private final UserRoleRepository userRoleRepository;
@@ -62,19 +62,5 @@ public class UserService implements UserDetailsService {
         return userRepository.findAll();
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        UserEntity user = userRepository.findByusername(username);
-        if(user == null){
-            log.error("User Not Found");
-            throw new UsernameNotFoundException("User Not Found");
-        } else{
-            log.info("User found in the database : {}",user.getUsername());
-        }
-
-        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        user.getRoles().forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getUserRoleCode().toString())));
-        return new org.springframework.security.core.userdetails.User(user.getUsername(),user.getPassword(),authorities);
-    }
 }

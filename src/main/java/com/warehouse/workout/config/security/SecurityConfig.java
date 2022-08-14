@@ -2,6 +2,7 @@ package com.warehouse.workout.config.security;
 
 import com.warehouse.workout.config.security.filter.CustomAuthorizationFilter;
 import com.warehouse.workout.config.security.filter.CustomAuthenticationFilter;
+import com.warehouse.workout.user.service.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -10,25 +11,21 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final UserDetailsService userDetailsService;
+    private final UserDetailsServiceImpl userDetailsServiceImpl;
     private final PasswordEncoder passwordEncoder;
-
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        // AuthenticationManager가 사용함
-        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
+
+        auth.userDetailsService(userDetailsServiceImpl).passwordEncoder(passwordEncoder);
     }
 
     @Override
@@ -40,13 +37,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         customAuthenticationFilter.setFilterProcessesUrl("/api/login"); // 로그인 요청 API
 
         http.csrf().disable();
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        http.authorizeRequests().antMatchers("/h2-console/**").permitAll();
-        http.headers().addHeaderWriter( new XFrameOptionsHeaderWriter(
-                XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN
-        ));
 
-        http.authorizeRequests().antMatchers("/api/login/**","/api/token/refresh").permitAll();
+        http.authorizeRequests().antMatchers("/api/v1/login/**","/api/v1/token/refresh").permitAll();
         http.authorizeRequests().antMatchers("/api/v1/**").permitAll();
         http.authorizeRequests().antMatchers(HttpMethod.GET,"api/v1/user/**").hasAnyAuthority("ROLE_USER");
         http.authorizeRequests().antMatchers(HttpMethod.POST,"api/v1/user/**").hasAnyAuthority("ROLE_ADMIN");
