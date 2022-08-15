@@ -4,6 +4,7 @@ import com.warehouse.workout.config.security.filter.CustomAuthorizationFilter;
 import com.warehouse.workout.config.security.filter.CustomAuthenticationFilter;
 import com.warehouse.workout.user.service.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,8 +25,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-
         auth.userDetailsService(userDetailsServiceImpl).passwordEncoder(passwordEncoder);
+        auth.inMemoryAuthentication()
+                .withUser("hyojong")
+                .password(passwordEncoder.encode("3855"))
+                .roles("USER");
+
     }
 
     @Override
@@ -34,14 +39,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // /api/login 요청을 처리하기 위한 필터를 생성한다
         CustomAuthenticationFilter customAuthenticationFilter =
                 new CustomAuthenticationFilter(authenticationManagerBean());
-        customAuthenticationFilter.setFilterProcessesUrl("/api/login"); // 로그인 요청 API
+        customAuthenticationFilter.setFilterProcessesUrl("/api/v1/login"); // 로그인 요청 API
 
         http.csrf().disable();
 
         http.authorizeRequests().antMatchers("/api/v1/login/**","/api/v1/token/refresh").permitAll();
         http.authorizeRequests().antMatchers("/api/v1/**").permitAll();
-        http.authorizeRequests().antMatchers(HttpMethod.GET,"api/v1/user/**").hasAnyAuthority("ROLE_USER");
-        http.authorizeRequests().antMatchers(HttpMethod.POST,"api/v1/user/**").hasAnyAuthority("ROLE_ADMIN");
+        http.authorizeRequests().antMatchers(HttpMethod.GET,"/api/v1/user/**").hasAnyAuthority("ROLE_USER");
+        http.authorizeRequests().antMatchers(HttpMethod.POST,"/api/v1/user/**").hasAnyAuthority("ROLE_ADMIN");
         http.authorizeRequests().anyRequest().authenticated();
         http.addFilter(customAuthenticationFilter); // http 요청에 filter를 적용한다.
 
@@ -53,4 +58,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
+
+
+
 }
