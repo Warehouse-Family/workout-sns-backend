@@ -58,25 +58,8 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
             e.printStackTrace();
         }
 
-        log.info("username is :{}",username);
-        log.info("password is :{}",password);
-
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
-        // 내부적으로 authenticationManager -> ProviderManager -> AbstractUserDetailsAuthenticationProvider.java -> DaoAuthenticationProvider의 retrieveUser 메소드
-
-        Authentication authenticate = null;
-
-        try{
-            authenticate = authenticationManager.authenticate(authenticationToken);
-        } catch (BadCredentialsException badCredentialsException){
-            log.info("찾을수 없는 사용자 정보입니다.");
-        } catch (Exception e){
-            log.info("비밀번호가 맞지 않습니다");
-            log.info(e.toString());
-        }
-
-
-        log.info(authenticate.getName());
+        Authentication authenticate = authenticationManager.authenticate(authenticationToken);;
 
         return authenticate;
 
@@ -112,6 +95,8 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         tokens.put("access_token", accessToken);
         tokens.put("refresh_token", refreshToken);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        //response.getWriter().println(tokens);
+
         new ObjectMapper().writeValue(response.getOutputStream(),tokens);
 
         // 응답헤더에 토큰 세팅

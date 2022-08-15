@@ -2,6 +2,7 @@ package com.warehouse.workout.config.security;
 
 import com.warehouse.workout.config.security.filter.CustomAuthorizationFilter;
 import com.warehouse.workout.config.security.filter.CustomAuthenticationFilter;
+import com.warehouse.workout.config.security.handler.CustomAuthenticationFailureHandler;
 import com.warehouse.workout.user.service.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -22,15 +23,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsServiceImpl userDetailsServiceImpl;
     private final PasswordEncoder passwordEncoder;
+    private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsServiceImpl).passwordEncoder(passwordEncoder);
-        auth.inMemoryAuthentication()
-                .withUser("hyojong")
-                .password(passwordEncoder.encode("3855"))
-                .roles("USER");
-
     }
 
     @Override
@@ -40,25 +37,27 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         CustomAuthenticationFilter customAuthenticationFilter =
                 new CustomAuthenticationFilter(authenticationManagerBean());
         customAuthenticationFilter.setFilterProcessesUrl("/api/v1/login"); // 로그인 요청 API
+        customAuthenticationFilter.setAuthenticationFailureHandler(customAuthenticationFailureHandler);
 
         http.csrf().disable();
-
         http.authorizeRequests().antMatchers("/api/v1/login/**","/api/v1/token/refresh").permitAll();
-        http.authorizeRequests().antMatchers("/api/v1/**").permitAll();
-        http.authorizeRequests().antMatchers(HttpMethod.GET,"/api/v1/user/**").hasAnyAuthority("ROLE_USER");
-        http.authorizeRequests().antMatchers(HttpMethod.POST,"/api/v1/user/**").hasAnyAuthority("ROLE_ADMIN");
+
+//        http.authorizeRequests().antMatchers("/api/v1/**").permitAll();
+//        http.authorizeRequests().antMatchers(HttpMethod.GET,"/api/v1/user/**").hasAnyAuthority("ROLE_USER");
+//        http.authorizeRequests().antMatchers(HttpMethod.POST,"/api/v1/user/**").hasAnyAuthority("ROLE_ADMIN");
         http.authorizeRequests().anyRequest().authenticated();
         http.addFilter(customAuthenticationFilter); // http 요청에 filter를 적용한다.
 
         // UsernamePasswordAuthenticationFilter filter에 앞서 직접 구현한 CustomAuthorizationFilter 적용
         http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+
+
+
     }
 
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
-
-
 
 }
