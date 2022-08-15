@@ -36,15 +36,15 @@ public class UserController {
 
     private final UserService userService;
 
-    @GetMapping("/users")
-    public ResponseEntity<List<UserEntity>> getUsers(){
-
-        SecurityContext context = SecurityContextHolder.getContext();
-        log.info("getCredentials = {}",context.getAuthentication().getCredentials());
-        log.info("getPrincipal = {}",context.getAuthentication().getPrincipal());
-
-        return ResponseEntity.ok().body(userService.getUsers());
-    }
+//    @GetMapping("/users")
+//    public ResponseEntity<List<UserEntity>> getUsers(){
+//
+//        SecurityContext context = SecurityContextHolder.getContext();
+//        log.info("getCredentials = {}",context.getAuthentication().getCredentials());
+//        log.info("getPrincipal = {}",context.getAuthentication().getPrincipal());
+//
+//        return ResponseEntity.ok().body(userService.getUsers());
+//    }
 
     @PostMapping("/user")
     public ResponseEntity<UserEntity> saveUser(@RequestBody UserEntity user){

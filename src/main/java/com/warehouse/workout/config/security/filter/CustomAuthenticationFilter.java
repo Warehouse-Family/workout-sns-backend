@@ -8,11 +8,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StreamUtils;
@@ -61,7 +63,22 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
         // 내부적으로 authenticationManager -> ProviderManager -> AbstractUserDetailsAuthenticationProvider.java -> DaoAuthenticationProvider의 retrieveUser 메소드
-        return authenticationManager.authenticate(authenticationToken);
+
+        Authentication authenticate = null;
+
+        try{
+            authenticate = authenticationManager.authenticate(authenticationToken);
+        } catch (BadCredentialsException badCredentialsException){
+            log.info("찾을수 없는 사용자 정보입니다.");
+        } catch (Exception e){
+            log.info("비밀번호가 맞지 않습니다");
+            log.info(e.toString());
+        }
+
+
+        log.info(authenticate.getName());
+
+        return authenticate;
 
     }
 

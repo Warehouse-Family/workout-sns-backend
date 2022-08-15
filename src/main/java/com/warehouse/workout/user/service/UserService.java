@@ -7,6 +7,9 @@ import com.warehouse.workout.user.repository.UserRepository;
 import com.warehouse.workout.user.repository.UserRoleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -23,12 +26,11 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 @Slf4j
-public class UserService implements UserDetailsService {
+public class UserService {
 
     private final UserRepository userRepository;
     private final UserRoleRepository userRoleRepository;
     private final PasswordEncoder passwordEncoder;
-
 
     public UserEntity saveUser(UserEntity user){
 
@@ -62,19 +64,4 @@ public class UserService implements UserDetailsService {
         return userRepository.findAll();
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-
-        UserEntity user = userRepository.findByusername(username);
-        if(user == null){
-            log.error("User Not Found");
-            throw new UsernameNotFoundException("User Not Found");
-        } else{
-            log.info("User found in the database : {}",user.getUsername());
-        }
-
-        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        user.getRoles().forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getUserRoleCode().toString())));
-        return new org.springframework.security.core.userdetails.User(user.getUsername(),user.getPassword(),authorities);
-    }
 }

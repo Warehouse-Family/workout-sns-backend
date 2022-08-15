@@ -3,6 +3,7 @@ package com.warehouse.workout.user.entity;
 import com.warehouse.workout.constant.code.UserRoleCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Fetch;
 
 
 import javax.persistence.*;
@@ -21,6 +22,7 @@ public class UserRoleEntity {
     private UserEntity user;
 
     @Column(name = "ROLE_CODE")
+    @Enumerated(EnumType.STRING)
     private UserRoleCode userRoleCode;
 
     public UserRoleEntity(UserEntity user,UserRoleCode userRoleCode) {

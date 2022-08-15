@@ -24,11 +24,11 @@ public class UserEntity {
     @Column(name = "PASSWORD")
     private String password;
     @Column(name = "PHONE_NUMBER")
-    private String PhoneNumber;
+    private String phoneNumber;
     @Column(name = "EMAIL")
     private String email;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user",fetch = FetchType.EAGER)
     private List<UserRoleEntity> roles = new ArrayList<>();
 
 //    @OneToOne(mappedBy = "user")

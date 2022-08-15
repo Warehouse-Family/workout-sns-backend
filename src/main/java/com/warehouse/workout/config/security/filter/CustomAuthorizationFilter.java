@@ -32,7 +32,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // 로그인 또는 토큰 Refresh 요청인 경우 Filter를 통과시킨다
-        if(request.getServletPath().equals("/api/login") || request.getServletPath().equals("/api/token/refresh")){
+        if(request.getServletPath().equals("/api/v1/login") || request.getServletPath().equals("/api/v1/token/refresh")){
             filterChain.doFilter(request,response);
         } else{ // 검증
             // Request 헤더의 Authorization의 값을 가져온다
