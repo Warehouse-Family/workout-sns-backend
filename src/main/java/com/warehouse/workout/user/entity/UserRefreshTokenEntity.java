@@ -1,18 +1,15 @@
 package com.warehouse.workout.user.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "TABLE_REFRESH_TOKEN")
-@Data
+@Table(name = "TABLE_USER_REFRESH_TOKEN")
+@Getter
 @NoArgsConstructor
-@AllArgsConstructor
-public class RefreshTokenEntity {
+public class UserRefreshTokenEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -32,10 +29,11 @@ public class RefreshTokenEntity {
     @Column(name = "refresh_token")
     private String refreshToken;
 
-
-
-
-
-
-
+    @Builder
+    public UserRefreshTokenEntity(UserEntity user, LocalDateTime issueTime, LocalDateTime expiredTime, String refreshToken) {
+        this.user = user;
+        this.issueTime = issueTime;
+        this.expiredTime = expiredTime;
+        this.refreshToken = refreshToken;
+    }
 }
