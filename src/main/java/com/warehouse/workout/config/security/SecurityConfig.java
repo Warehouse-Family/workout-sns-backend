@@ -2,6 +2,7 @@ package com.warehouse.workout.config.security;
 
 import com.warehouse.workout.config.security.filter.CustomAuthorizationFilter;
 import com.warehouse.workout.config.security.filter.CustomAuthenticationFilter;
+
 import com.warehouse.workout.config.security.handler.CustomAuthenticationFailureHandler;
 import com.warehouse.workout.config.security.handler.CustomAuthenticationSuccessHandler;
 import com.warehouse.workout.user.service.UserDetailsServiceImpl;
@@ -25,6 +26,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsServiceImpl userDetailsServiceImpl;
     private final PasswordEncoder passwordEncoder;
+
     private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
     private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
 
@@ -35,6 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder);
 
         auth.authenticationProvider(daoAuthenticationProvider);
+
     }
 
     @Override
@@ -48,10 +51,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.csrf().disable();
         http.authorizeRequests().antMatchers("/api/v1/login","/api/v1/token/refresh").permitAll();
-
-//        http.authorizeRequests().antMatchers("/api/v1/**").permitAll();
-//        http.authorizeRequests().antMatchers(HttpMethod.GET,"/api/v1/user/**").hasAnyAuthority("ROLE_USER");
-//        http.authorizeRequests().antMatchers(HttpMethod.POST,"/api/v1/user/**").hasAnyAuthority("ROLE_ADMIN");
         http.authorizeRequests().anyRequest().authenticated();
         http.addFilter(customAuthenticationFilter); // http 요청에 filter를 적용한다.
 
