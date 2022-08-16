@@ -22,9 +22,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private final UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException{
 
         UserEntity user = userRepository.findByusername(username);
+
         if(user == null){
             log.error("User Not Found");
             throw new UsernameNotFoundException("User Not Found");
@@ -34,7 +35,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
         user.getRoles().forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getUserRoleCode().toString())));
-        //authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
         return new User(user.getUsername(),user.getPassword(),authorities);
     }
 }

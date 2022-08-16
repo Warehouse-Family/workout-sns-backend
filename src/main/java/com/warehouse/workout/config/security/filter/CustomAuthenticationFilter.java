@@ -58,65 +58,50 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
             e.printStackTrace();
         }
 
-        log.info("username is :{}",username);
-        log.info("password is :{}",password);
-
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
-        // 내부적으로 authenticationManager -> ProviderManager -> AbstractUserDetailsAuthenticationProvider.java -> DaoAuthenticationProvider의 retrieveUser 메소드
-
-        Authentication authenticate = null;
-
-        try{
-            authenticate = authenticationManager.authenticate(authenticationToken);
-        } catch (BadCredentialsException badCredentialsException){
-            log.info("찾을수 없는 사용자 정보입니다.");
-        } catch (Exception e){
-            log.info("비밀번호가 맞지 않습니다");
-            log.info(e.toString());
-        }
-
-
-        log.info(authenticate.getName());
-
+        Authentication authenticate = authenticationManager.authenticate(authenticationToken);;
+        
         return authenticate;
 
     }
 
-    @Override // 인증에 성공한 경우 응답할때 JWT를 담아서 반환한다
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
-        User user = (User) authentication.getPrincipal(); // 접속한 사용자의 정보(User Entity아님!!)
-        Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
-
-        // 액세스 토큰을 만든다.
-        String accessToken = JWT.create()
-                .withSubject(user.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 60 * 1000)) // 현재 시간으로부터 10분 뒤 만료
-                .withIssuer(request.getRequestURL().toString()) // 토큰을 발행한 party가 누군지 설정한다.
-                .withClaim("roles",user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
-                .sign(algorithm);
-
-        String refreshToken = JWT.create()
-                .withSubject(user.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() + 30 * 60 * 1000)) // 현재 시간으로부터 30분 뒤 만료
-                .withIssuer(request.getRequestURL().toString())
-                .sign(algorithm);
-
-        // http Only Cookie에 Refresh Token을 담아서 보낸다.
-        Cookie cookie = new Cookie("refresh_token",refreshToken);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        response.addCookie(cookie);
-
-        // 응답 바디에 토큰 세팅
-        Map<String,String> tokens = new HashMap<>();
-        tokens.put("access_token", accessToken);
-        tokens.put("refresh_token", refreshToken);
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        new ObjectMapper().writeValue(response.getOutputStream(),tokens);
-
-        // 응답헤더에 토큰 세팅
-        //response.setHeader("access_token",accessToken);
-        //response.setHeader("refresh_token",refreshToken);
-
-    }
+//    @Override // 인증에 성공한 경우 응답할때 JWT를 담아서 반환한다
+//    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
+//        User user = (User) authentication.getPrincipal(); // 접속한 사용자의 정보(User Entity아님!!)
+//        Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
+//
+//        // 액세스 토큰을 만든다.
+//        String accessToken = JWT.create()
+//                .withSubject(user.getUsername())
+//                .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 60 * 1000)) // 현재 시간으로부터 10분 뒤 만료
+//                .withIssuer(request.getRequestURL().toString()) // 토큰을 발행한 party가 누군지 설정한다.
+//                .withClaim("roles",user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
+//                .sign(algorithm);
+//
+//        String refreshToken = JWT.create()
+//                .withSubject(user.getUsername())
+//                .withExpiresAt(new Date(System.currentTimeMillis() + 30 * 60 * 1000)) // 현재 시간으로부터 30분 뒤 만료
+//                .withIssuer(request.getRequestURL().toString())
+//                .sign(algorithm);
+//
+//        // http Only Cookie에 Refresh Token을 담아서 보낸다.
+//        Cookie cookie = new Cookie("refresh_token",refreshToken);
+//        cookie.setHttpOnly(true);
+//        cookie.setSecure(true);
+//        response.addCookie(cookie);
+//
+//        // 응답 바디에 토큰 세팅
+//        Map<String,String> tokens = new HashMap<>();
+//        tokens.put("access_token", accessToken);
+//        tokens.put("refresh_token", refreshToken);
+//        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+//        //response.getWriter().println(tokens);
+//
+//        new ObjectMapper().writeValue(response.getOutputStream(),tokens);
+//
+//        // 응답헤더에 토큰 세팅
+//        //response.setHeader("access_token",accessToken);
+//        //response.setHeader("refresh_token",refreshToken);
+//
+//    }
 }
