@@ -8,11 +8,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StreamUtils;
@@ -56,12 +58,10 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
             e.printStackTrace();
         }
 
-        log.info("username is :{}",username);
-        log.info("password is :{}",password);
-
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
-        // 내부적으로 authenticationManager -> ProviderManager -> AbstractUserDetailsAuthenticationProvider.java -> DaoAuthenticationProvider의 retrieveUser 메소드
-        return authenticationManager.authenticate(authenticationToken);
+        Authentication authenticate = authenticationManager.authenticate(authenticationToken);;
+
+        return authenticate;
 
     }
 
@@ -95,6 +95,8 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         tokens.put("access_token", accessToken);
         tokens.put("refresh_token", refreshToken);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        //response.getWriter().println(tokens);
+
         new ObjectMapper().writeValue(response.getOutputStream(),tokens);
 
         // 응답헤더에 토큰 세팅
