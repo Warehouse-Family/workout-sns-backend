@@ -49,6 +49,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         customAuthenticationFilter.setAuthenticationFailureHandler(customAuthenticationFailureHandler);
         customAuthenticationFilter.setAuthenticationSuccessHandler(customAuthenticationSuccessHandler);
 
+
         http.csrf().disable();
         http.authorizeRequests().antMatchers("/api/v1/login","/api/v1/token/refresh").permitAll();
         http.authorizeRequests().anyRequest().authenticated();
