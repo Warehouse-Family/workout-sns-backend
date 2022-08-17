@@ -3,6 +3,8 @@ package com.warehouse.workout.config.security.handler;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.warehouse.workout.constant.number.TimeConstant;
+import com.warehouse.workout.user.entity.UserEntity;
 import com.warehouse.workout.user.entity.UserRefreshTokenEntity;
 import com.warehouse.workout.user.repository.UserRefreshTokenRepository;
 import com.warehouse.workout.user.repository.UserRepository;
@@ -29,6 +31,7 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -39,6 +42,8 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     private final UserRefreshTokenRepository userRefreshTokenRepository;
     private final UserRepository userRepository;
 
+
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 
@@ -48,22 +53,26 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         // 액세스 토큰을 만든다.
         String accessToken = JWT.create()
                 .withSubject(user.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 60 * 1000)) // 현재 시간으로부터 10분 뒤 만료
+                .withExpiresAt(new Date(System.currentTimeMillis() + TimeConstant.MILLISECOND_OF_TEN_MINUTE)) // 현재 시간으로부터 10분 뒤 만료
                 .withIssuer(request.getRequestURL().toString()) // 토큰을 발행한 party가 누군지 설정한다.
                 .withClaim("roles",user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
                 .sign(algorithm);
 
         String refreshToken = JWT.create()
                 .withSubject(user.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() + 30 * 60 * 1000)) // 현재 시간으로부터 30분 뒤 만료
+                .withExpiresAt(new Date(System.currentTimeMillis() + TimeConstant.MILLISECOND_OF_HALF_HOUR)) // 현재 시간으로부터 30분 뒤 만료
                 .withIssuer(request.getRequestURL().toString())
                 .sign(algorithm);
 
+        UserEntity findUserEntity = userRepository.findByusername(user.getUsername());
+        Optional<UserRefreshTokenEntity> userRefreshTokenEntityByUser = userRefreshTokenRepository.findUserRefreshTokenEntityByUser(findUserEntity);
+
+        userRefreshTokenEntityByUser.ifPresent(userRefreshTokenRepository::delete);
 
         userRefreshTokenRepository.save(UserRefreshTokenEntity.builder()
                 .user(userRepository.findByusername(user.getUsername()))
                 .issueTime(LocalDateTime.now())
-                .expiredTime(LocalDateTime.ofInstant(new Date(System.currentTimeMillis() + 30 * 60 * 1000).toInstant(), ZoneId.systemDefault()))
+                .expiredTime(LocalDateTime.now().plusHours(1))
                 .refreshToken(refreshToken)
                 .build());
 
@@ -79,9 +88,6 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         tokens.put("refresh_token", refreshToken);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         //response.getWriter().println(tokens);
-
-
-
 
         new ObjectMapper().writeValue(response.getOutputStream(),tokens);
 

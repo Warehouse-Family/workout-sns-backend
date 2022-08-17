@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Table(name = "TABLE_USER_REFRESH_TOKEN")
@@ -36,4 +37,9 @@ public class UserRefreshTokenEntity {
         this.expiredTime = expiredTime;
         this.refreshToken = refreshToken;
     }
+
+    public void updateExpiredTime(LocalDateTime expiredTime){
+        this.expiredTime = expiredTime;
+    }
+
 }
