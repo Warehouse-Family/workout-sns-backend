@@ -3,6 +3,7 @@ package com.warehouse.workout.config.security.handler;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.warehouse.workout.config.security.common.TokenCommon;
 import com.warehouse.workout.constant.number.TimeConstant;
 import com.warehouse.workout.user.entity.UserEntity;
 import com.warehouse.workout.user.entity.UserRefreshTokenEntity;
@@ -48,26 +49,15 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 
         User user = (User) authentication.getPrincipal(); // 접속한 사용자의 정보(User Entity아님!!)
-        Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
 
-        // 액세스 토큰을 만든다.
-        String accessToken = JWT.create()
-                .withSubject(user.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() + TimeConstant.MILLISECOND_OF_TEN_MINUTE)) // 현재 시간으로부터 10분 뒤 만료
-                .withIssuer(request.getRequestURL().toString()) // 토큰을 발행한 party가 누군지 설정한다.
-                .withClaim("roles",user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
-                .sign(algorithm);
+        String accessToken = TokenCommon.publishAccessToken(user.getUsername(),request.getRequestURL().toString(),
+                user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
 
-        String refreshToken = JWT.create()
-                .withSubject(user.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() + TimeConstant.MILLISECOND_OF_HALF_HOUR)) // 현재 시간으로부터 30분 뒤 만료
-                .withIssuer(request.getRequestURL().toString())
-                .sign(algorithm);
+        String refreshToken = TokenCommon.publishRefreshToken(user.getUsername(),request.getRequestURL().toString());
 
         UserEntity findUserEntity = userRepository.findByusername(user.getUsername());
-        Optional<UserRefreshTokenEntity> userRefreshTokenEntityByUser = userRefreshTokenRepository.findUserRefreshTokenEntityByUser(findUserEntity);
-
-        userRefreshTokenEntityByUser.ifPresent(userRefreshTokenRepository::delete);
+        UserRefreshTokenEntity userRefreshTokenEntityByUser = userRefreshTokenRepository.findUserRefreshTokenEntityByUser(findUserEntity);
+        if(userRefreshTokenEntityByUser != null) userRefreshTokenRepository.delete(userRefreshTokenEntityByUser);
 
         userRefreshTokenRepository.save(UserRefreshTokenEntity.builder()
                 .user(userRepository.findByusername(user.getUsername()))
