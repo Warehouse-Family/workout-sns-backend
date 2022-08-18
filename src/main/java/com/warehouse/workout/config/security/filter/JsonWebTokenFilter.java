@@ -1,5 +1,6 @@
 package com.warehouse.workout.config.security.filter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.warehouse.workout.config.constant.UrlPath;
 import com.warehouse.workout.config.security.common.TokenCommon;
 import com.warehouse.workout.user.entity.UserEntity;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -18,13 +20,18 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Slf4j
 @Transactional
@@ -64,16 +71,25 @@ public class JsonWebTokenFilter extends OncePerRequestFilter {
 
                 String accessToken = TokenCommon.publishAccessToken(username, request.getServletPath(),
                         userEntity.getRoles().stream().map(userRoleEntity -> userRoleEntity.getUserRoleCode().toString()).collect(Collectors.toList()));
-                // TODO - 새롭게 만든 accessToken을 Response에 담아 반환한다
+
+                Map<String,String> tokens = new HashMap<>();
+                tokens.put("access_token", accessToken);
+                response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                new ObjectMapper().writeValue(response.getOutputStream(),tokens);
 
 
             } else { // 만료된 Refresh Token
-                // TODO - 리다이렉트 Response 반환
+                // TODO - 리다이렉트 Response 반환(???) 아니면 200으로 주고 Body에 Login Redirect 표기?
 
             }
 
         } else{
             // TODO - Access Token이 만료되지 않았는지 검사한다. 만료 되었다면 토큰 만료 메시지를 Response에 담아 보낸다.
+            String authorizationHeader = request.getHeader(AUTHORIZATION);
+            if(authorizationHeader.startsWith("Bearer ")){
+
+            }
+
 
         }
 
