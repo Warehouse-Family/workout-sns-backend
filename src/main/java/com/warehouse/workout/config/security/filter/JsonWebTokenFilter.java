@@ -1,5 +1,6 @@
 package com.warehouse.workout.config.security.filter;
 
+import com.warehouse.workout.config.constant.UrlPath;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +20,7 @@ public class JsonWebTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        if(request.getServletPath().equals("/api/v1/refresh-token") && HttpMethod.GET.matches(request.getMethod())){
+        if(request.getServletPath().equals(UrlPath.TOKEN_REFRESH_URL) && HttpMethod.GET.matches(request.getMethod())){
             // TODO - refresh-token을 통해 Access Token을 재발급하는 로직 작성하기. 아래 주석에 따라 작성할것.
             // 사용자 정보를 얻는다.
 

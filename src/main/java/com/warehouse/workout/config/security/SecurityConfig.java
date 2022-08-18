@@ -1,5 +1,6 @@
 package com.warehouse.workout.config.security;
 
+import com.warehouse.workout.config.constant.UrlPath;
 import com.warehouse.workout.config.security.filter.CustomAuthorizationFilter;
 import com.warehouse.workout.config.security.filter.CustomAuthenticationFilter;
 
@@ -46,14 +47,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 
         http.csrf().disable();
-        http.authorizeRequests().antMatchers("/api/v1/login","/api/v1/token/refresh").permitAll();
+        http.authorizeRequests().antMatchers(UrlPath.LOGIN_URL, UrlPath.TOKEN_REFRESH_URL).permitAll();
         http.authorizeRequests().anyRequest().authenticated();
 
 
         // 필터 생성 및 순서 부여
         CustomAuthenticationFilter customAuthenticationFilter =
                 new CustomAuthenticationFilter(authenticationManagerBean());
-        customAuthenticationFilter.setFilterProcessesUrl("/api/v1/login"); // 로그인 요청 API
+        customAuthenticationFilter.setFilterProcessesUrl(UrlPath.LOGIN_URL); // 로그인 요청 API
         customAuthenticationFilter.setAuthenticationFailureHandler(customAuthenticationFailureHandler);
         customAuthenticationFilter.setAuthenticationSuccessHandler(customAuthenticationSuccessHandler);
 
@@ -61,8 +62,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.addFilter(new JsonWebTokenFilter());
         http.addFilterBefore(customAuthenticationFilter, JsonWebTokenFilter.class);
         http.addFilterAfter(new CustomAuthorizationFilter(),JsonWebTokenFilter.class);
-
-
 
     }
 
