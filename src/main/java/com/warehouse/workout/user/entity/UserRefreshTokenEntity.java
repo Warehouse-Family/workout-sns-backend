@@ -1,5 +1,6 @@
 package com.warehouse.workout.user.entity;
 
+import com.warehouse.workout.util.DateUtil;
 import lombok.*;
 
 import javax.persistence.*;
@@ -41,5 +42,10 @@ public class UserRefreshTokenEntity {
     public void updateExpiredTime(LocalDateTime expiredTime){
         this.expiredTime = expiredTime;
     }
+
+    public boolean isNowExpired(){
+        return DateUtil.isBetween(this.issueTime , this.expiredTime , LocalDateTime.now());
+    }
+
 
 }
