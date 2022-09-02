@@ -7,6 +7,8 @@ import com.warehouse.workout.config.security.filter.CustomAuthenticationFilter;
 import com.warehouse.workout.config.security.filter.JsonWebTokenFilter;
 import com.warehouse.workout.config.security.handler.CustomAuthenticationFailureHandler;
 import com.warehouse.workout.config.security.handler.CustomAuthenticationSuccessHandler;
+import com.warehouse.workout.user.repository.UserRefreshTokenRepository;
+import com.warehouse.workout.user.repository.UserRepository;
 import com.warehouse.workout.user.service.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -29,6 +31,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
     private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
+
+    private final UserRefreshTokenRepository userRefreshTokenRepository;
+    private final UserRepository userRepository;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -59,7 +64,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         customAuthenticationFilter.setAuthenticationSuccessHandler(customAuthenticationSuccessHandler);
 
         // AuthenticationFilter -> JsonWebTokenFilter -> AuthorizationFilter
-        http.addFilter(new JsonWebTokenFilter());
+        http.addFilter(new JsonWebTokenFilter(userRefreshTokenRepository ,userRepository));
         http.addFilterBefore(customAuthenticationFilter, JsonWebTokenFilter.class);
         http.addFilterAfter(new CustomAuthorizationFilter(),JsonWebTokenFilter.class);
 
