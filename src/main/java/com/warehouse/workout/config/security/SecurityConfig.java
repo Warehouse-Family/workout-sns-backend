@@ -10,6 +10,7 @@ import com.warehouse.workout.config.security.handler.CustomAuthenticationSuccess
 import com.warehouse.workout.user.repository.UserRefreshTokenRepository;
 import com.warehouse.workout.user.repository.UserRepository;
 import com.warehouse.workout.user.service.UserDetailsServiceImpl;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,7 +24,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsServiceImpl userDetailsServiceImpl;
@@ -64,7 +65,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         customAuthenticationFilter.setAuthenticationSuccessHandler(customAuthenticationSuccessHandler);
 
         // AuthenticationFilter -> JsonWebTokenFilter -> AuthorizationFilter
-        http.addFilter(new JsonWebTokenFilter(userRefreshTokenRepository ,userRepository));
+        http.addFilterAfter(new JsonWebTokenFilter(userRefreshTokenRepository ,userRepository),CustomAuthenticationFilter.class);
         http.addFilterBefore(customAuthenticationFilter, JsonWebTokenFilter.class);
         http.addFilterAfter(new CustomAuthorizationFilter(),JsonWebTokenFilter.class);
 
