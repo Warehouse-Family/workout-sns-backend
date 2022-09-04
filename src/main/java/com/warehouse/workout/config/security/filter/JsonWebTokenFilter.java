@@ -50,22 +50,21 @@ public class JsonWebTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        // 사용자 정보를 얻는다.
-        String username = "";
-
-        try {
-            ServletInputStream inputStream = request.getInputStream();
-            String msgBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
-            JSONObject root = new JSONObject(msgBody);
-
-            username = root.get("username").toString();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
         // 토큰 Refresh 요청인 경우
         if(request.getServletPath().equals(UrlPath.TOKEN_REFRESH_URL) && HttpMethod.GET.matches(request.getMethod())){
+
+            // 사용자 정보를 얻는다.
+            String username = "";
+
+            try {
+                ServletInputStream inputStream = request.getInputStream();
+                String msgBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
+                JSONObject root = new JSONObject(msgBody);
+
+                username = root.get("username").toString();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
             UserEntity userEntity = userRepository.findByusername(username);
             // Refresh Token이 만료되기 전이면 Access Token을 새로 만들어서 발급한다.
@@ -80,12 +79,15 @@ public class JsonWebTokenFilter extends OncePerRequestFilter {
                 Map<String,String> tokens = new HashMap<>();
                 tokens.put("access_token", accessToken);
                 response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                response.setStatus(HttpServletResponse.SC_OK);
                 new ObjectMapper().writeValue(response.getOutputStream(),tokens);
 
             } else { // 만료된 Refresh Token
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             }
 
+        } else if(request.getServletPath().equals(UrlPath.SIGN_UP_URL)){ // 회원가입
+            doFilter(request,response,filterChain);
         } else{
             // Access Token이 만료되지 않았는지 검사한다. 만료되면 401에러.
             String authorizationHeader = request.getHeader(AUTHORIZATION);

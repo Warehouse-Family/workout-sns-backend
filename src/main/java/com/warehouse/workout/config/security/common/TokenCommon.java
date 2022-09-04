@@ -37,7 +37,6 @@ public class TokenCommon {
 
     public static boolean isAccessTokenExpired(String authorizationHeader){
         boolean result = true;
-
         if(authorizationHeader.startsWith("Bearer ")){
             String token = authorizationHeader.substring("Bearer ".length());// prefix를 잘라낸다.
             Algorithm algorithm = Algorithm.HMAC256("secret".getBytes()); // 암호화 알고리즘을 만든다.

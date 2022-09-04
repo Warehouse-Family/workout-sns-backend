@@ -44,7 +44,7 @@ public class UserRefreshTokenEntity {
     }
 
     public boolean isNowExpired(){
-        return DateUtil.isBetween(this.issueTime , this.expiredTime , LocalDateTime.now());
+        return !DateUtil.isBetween(this.issueTime , this.expiredTime , LocalDateTime.now());
     }
 
 
